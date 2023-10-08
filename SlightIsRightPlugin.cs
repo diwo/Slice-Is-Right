@@ -4,8 +4,10 @@ using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.Gui;
 using Dalamud.Interface;
+using Dalamud.Interface.Utility;
 using Dalamud.IoC;
 using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
@@ -23,13 +25,13 @@ namespace SliceIsRight
         private DalamudPluginInterface PluginInterface { get; set; }
 
         [PluginService]
-        private ObjectTable ObjectTable { get; set; }
+        private IObjectTable? ObjectTable { get; set; }
 
         [PluginService]
-        private GameGui GameGui { get; set; }
+        private IGameGui GameGui { get; set; }
 
         [PluginService]
-        private ClientState ClientState { get; set; }
+        private IClientState ClientState { get; set; }
 
         private const ushort GoldSaucerTerritoryId = 144;
         private bool IsInGoldSaucer { get; set; }
@@ -46,7 +48,7 @@ namespace SliceIsRight
             IsInGoldSaucer = ClientState.TerritoryType == GoldSaucerTerritoryId;
         }
 
-        private void TerritoryChanged(object? sender, ushort e)
+        private void TerritoryChanged(ushort e)
         {
             IsInGoldSaucer = e == GoldSaucerTerritoryId;
         }
