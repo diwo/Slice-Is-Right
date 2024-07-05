@@ -21,8 +21,7 @@ namespace SliceIsRight
         public string Name => "Slice is Right";
 
         [PluginService]
-        [RequiredVersion("1.0")]
-        private DalamudPluginInterface PluginInterface { get; set; }
+        private IDalamudPluginInterface PluginInterface { get; set; }
 
         [PluginService]
         private IObjectTable? ObjectTable { get; set; }
@@ -74,7 +73,7 @@ namespace SliceIsRight
 
             for (int index = 0; index < ObjectTable.Length; ++ index)
             {
-                GameObject? obj = ObjectTable[index];
+                IGameObject? obj = ObjectTable[index];
                 if (obj == null || DistanceToPlayer(obj.Position) > MaxDistance)
                     continue;
 
@@ -84,7 +83,7 @@ namespace SliceIsRight
                     //DebugObject(index, obj, model);
                     RenderObject(index, obj, model);
                 }
-                else if (ClientState.LocalPlayer?.ObjectId == obj.ObjectId)
+                else if (ClientState.LocalPlayer?.EntityId == obj.EntityId)
                 {
                     // local player
                     //DebugObject(index, obj, model);
@@ -98,7 +97,7 @@ namespace SliceIsRight
         }
 
 
-        private void DebugObject(int index, GameObject obj, int model)
+        private void DebugObject(int index, IGameObject obj, int model)
         {
             if (GameGui.WorldToScreen(obj.Position, out var screenCoords))
             {
@@ -106,7 +105,7 @@ namespace SliceIsRight
                 // to avoid performance issues, we have to manually determine if creating a window would
                 // produce a new viewport, and skip rendering it if so
                 float distance = DistanceToPlayer(obj.Position);
-                var objectText = $"{obj.Address.ToInt64():X}:{obj.ObjectId:X}[{index}] - {obj.ObjectKind} - {model}: {obj.Name} - {distance:F2}";
+                var objectText = $"{obj.Address.ToInt64():X}:{obj.EntityId:X}[{index}] - {obj.ObjectKind} - {model}: {obj.Name} - {distance:F2}";
 
                 var screenPos = ImGui.GetMainViewport().Pos;
                 var screenSize = ImGui.GetMainViewport().Size;
@@ -142,18 +141,18 @@ namespace SliceIsRight
             }
         }
 
-        private void RenderObject(int index, GameObject obj, int model)
+        private void RenderObject(int index, IGameObject obj, int model)
         {
-            objectsToMatch.Remove(obj.ObjectId);
+            objectsToMatch.Remove(obj.EntityId);
 
-            if (objectsAndSpawnTime.TryGetValue(obj.ObjectId, out DateTime spawnTime))
+            if (objectsAndSpawnTime.TryGetValue(obj.EntityId, out DateTime spawnTime))
             {
                 if (spawnTime.AddSeconds(5) > DateTime.Now)
                     return;
             }
             else
             {
-                objectsAndSpawnTime.Add(obj.ObjectId, DateTime.Now);
+                objectsAndSpawnTime.Add(obj.EntityId, DateTime.Now);
                 return;
             }
 
