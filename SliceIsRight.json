@@ -4,6 +4,7 @@
     "Punchline": "Shows where Bamboo falls.",
     "Description": "Shows where Bamboo falls.",
     "InternalName": "SliceIsRight",
+    "DalamudApiLevel": 11,
     "Tags": [
         "gold saucer",
         "yojimbo"
